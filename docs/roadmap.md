@@ -4,7 +4,7 @@
 
 | ステップ | 内容 | 状態 |
 |---|---|---|
-| 1 | DB 基盤 — Spring Data JPA + Flyway + H2（開発）/ PostgreSQL（本番） | 未着手 |
+| 1 | DB 基盤 — MyBatis + Flyway + PostgreSQL（Docker Compose） | 未着手 |
 | 2 | 書籍 CRUD — 最初のエンティティ実装 | 未着手 |
 | 3 | 著者・カテゴリ CRUD — 多対多リレーション | 未着手 |
 | 4 | 会員 CRUD | 未着手 |
