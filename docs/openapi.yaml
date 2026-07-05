@@ -1,0 +1,498 @@
+openapi: 3.0.3
+info:
+  title: 図書館管理システム API
+  version: "0.1.0"
+  description: 書籍・著者・カテゴリ・会員・貸出を管理する REST API
+servers:
+  - url: /
+
+paths:
+  /books:
+    get:
+      summary: 書籍一覧取得
+      tags: [books]
+      parameters:
+        - name: title
+          in: query
+          schema: { type: string }
+          description: タイトル部分一致検索
+        - name: categoryId
+          in: query
+          schema: { type: integer, format: int64 }
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: { $ref: '#/components/schemas/Book' }
+    post:
+      summary: 書籍登録
+      tags: [books]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /books/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: 書籍詳細取得
+      tags: [books]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      summary: 書籍更新
+      tags: [books]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      summary: 書籍削除
+      tags: [books]
+      responses:
+        '204': { description: No Content }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /authors:
+    get:
+      summary: 著者一覧取得
+      tags: [authors]
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: { $ref: '#/components/schemas/Author' }
+    post:
+      summary: 著者登録
+      tags: [authors]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AuthorRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Author' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /authors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: 著者詳細取得
+      tags: [authors]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Author' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      summary: 著者更新
+      tags: [authors]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AuthorRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Author' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: 著者削除
+      tags: [authors]
+      responses:
+        '204': { description: No Content }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /categories:
+    get:
+      summary: カテゴリ一覧取得
+      tags: [categories]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+    post:
+      summary: カテゴリ登録
+      tags: [categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /categories/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    delete:
+      summary: カテゴリ削除
+      tags: [categories]
+      responses:
+        '204': { description: No Content }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /members:
+    get:
+      summary: 会員一覧取得
+      tags: [members]
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: { $ref: '#/components/schemas/Member' }
+    post:
+      summary: 会員登録
+      tags: [members]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MemberRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /members/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: 会員詳細取得
+      tags: [members]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      summary: 会員更新
+      tags: [members]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MemberRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      summary: 会員削除
+      tags: [members]
+      responses:
+        '204': { description: No Content }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /loans:
+    get:
+      summary: 貸出一覧取得
+      tags: [loans]
+      parameters:
+        - name: memberId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: bookId
+          in: query
+          schema: { type: integer, format: int64 }
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: { $ref: '#/components/schemas/Loan' }
+    post:
+      summary: 貸出開始
+      tags: [loans]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoanRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Loan' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /loans/{id}/return:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    patch:
+      summary: 返却
+      tags: [loans]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Loan' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /loans/overdue:
+    get:
+      summary: 延滞一覧取得
+      tags: [loans]
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: { $ref: '#/components/schemas/Loan' }
+
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    page:
+      name: page
+      in: query
+      schema: { type: integer, default: 0 }
+    size:
+      name: size
+      in: query
+      schema: { type: integer, default: 20, maximum: 100 }
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+    Page:
+      type: object
+      properties:
+        totalElements: { type: integer, format: int64 }
+        totalPages: { type: integer }
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: { type: integer }
+        message: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
+
+    Book:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        title: { type: string }
+        isbn: { type: string }
+        publishedYear: { type: integer }
+        description: { type: string }
+        authors:
+          type: array
+          items: { $ref: '#/components/schemas/Author' }
+        categories:
+          type: array
+          items: { $ref: '#/components/schemas/Category' }
+
+    BookRequest:
+      type: object
+      required: [title, isbn, authorIds]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 255 }
+        isbn: { type: string }
+        publishedYear: { type: integer }
+        description: { type: string }
+        authorIds:
+          type: array
+          minItems: 1
+          items: { type: integer, format: int64 }
+        categoryIds:
+          type: array
+          items: { type: integer, format: int64 }
+
+    Author:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+
+    AuthorRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+
+    CategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+
+    Member:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        registeredAt: { type: string, format: date-time }
+
+    MemberRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+        email: { type: string, format: email }
+        phone: { type: string }
+
+    Loan:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        book: { $ref: '#/components/schemas/Book' }
+        member: { $ref: '#/components/schemas/Member' }
+        loanedAt: { type: string, format: date-time }
+        dueDate: { type: string, format: date }
+        returnedAt: { type: string, format: date-time, nullable: true }
+
+    LoanRequest:
+      type: object
+      required: [bookId, memberId]
+      properties:
+        bookId: { type: integer, format: int64 }
+        memberId: { type: integer, format: int64 }
