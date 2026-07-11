@@ -2,6 +2,7 @@ package org.sample.spring.rest.api.exception;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +39,13 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ErrorResponse handleConflict(ConflictException e) {
 		return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), null);
+	}
+
+	// アプリ層の事前チェックをすり抜けた DB 制約違反(並行リクエストでの一意制約違反など)を
+	// 500 ではなく 409 として返す
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public ErrorResponse handleDataIntegrityViolation(DataIntegrityViolationException e) {
+		return new ErrorResponse(HttpStatus.CONFLICT.value(), "request conflicts with existing data", null);
 	}
 }

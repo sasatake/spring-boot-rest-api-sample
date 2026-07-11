@@ -23,7 +23,7 @@ public interface BookMapper {
 
 	int update(Book book);
 
-	int delete(@Param("id") long id);
+	int softDelete(@Param("id") long id);
 
 	void insertBookAuthors(@Param("bookId") long bookId, @Param("authorIds") List<Long> authorIds);
 
@@ -34,6 +34,4 @@ public interface BookMapper {
 	void deleteBookCategories(@Param("bookId") long bookId);
 
 	int countActiveLoans(@Param("bookId") long bookId);
-
-	void deleteLoans(@Param("bookId") long bookId);
 }

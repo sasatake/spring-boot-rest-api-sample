@@ -78,10 +78,7 @@ public class BookService {
 		if (bookMapper.countActiveLoans(id) > 0) {
 			throw new ConflictException("book is currently on loan: id=" + id);
 		}
-		bookMapper.deleteLoans(id);
-		bookMapper.deleteBookAuthors(id);
-		bookMapper.deleteBookCategories(id);
-		bookMapper.delete(id);
+		bookMapper.softDelete(id);
 	}
 
 	private void validate(BookRequest request, Long excludeId) {

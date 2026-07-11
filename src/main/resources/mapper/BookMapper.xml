@@ -12,20 +12,23 @@
 		<collection property="categories" column="id" select="selectCategoriesByBookId"/>
 	</resultMap>
 
+	<sql id="listConditions">
+		WHERE b.deleted_at IS NULL
+		<if test="title != null and title != ''">
+			AND b.title ILIKE '%' || #{title} || '%'
+		</if>
+		<if test="categoryId != null">
+			AND EXISTS (
+				SELECT 1 FROM book_categories bc
+				WHERE bc.book_id = b.id AND bc.category_id = #{categoryId}
+			)
+		</if>
+	</sql>
+
 	<select id="selectBooks" resultMap="bookResultMap">
 		SELECT b.id, b.title, b.isbn, b.published_year, b.description
 		FROM books b
-		<where>
-			<if test="title != null and title != ''">
-				b.title ILIKE '%' || #{title} || '%'
-			</if>
-			<if test="categoryId != null">
-				AND EXISTS (
-					SELECT 1 FROM book_categories bc
-					WHERE bc.book_id = b.id AND bc.category_id = #{categoryId}
-				)
-			</if>
-		</where>
+		<include refid="listConditions"/>
 		ORDER BY b.id
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
@@ -33,23 +36,13 @@
 	<select id="countBooks" resultType="long">
 		SELECT COUNT(*)
 		FROM books b
-		<where>
-			<if test="title != null and title != ''">
-				b.title ILIKE '%' || #{title} || '%'
-			</if>
-			<if test="categoryId != null">
-				AND EXISTS (
-					SELECT 1 FROM book_categories bc
-					WHERE bc.book_id = b.id AND bc.category_id = #{categoryId}
-				)
-			</if>
-		</where>
+		<include refid="listConditions"/>
 	</select>
 
 	<select id="selectById" resultMap="bookResultMap">
 		SELECT id, title, isbn, published_year, description
 		FROM books
-		WHERE id = #{id}
+		WHERE id = #{id} AND deleted_at IS NULL
 	</select>
 
 	<select id="selectAuthorsByBookId" resultType="org.sample.spring.rest.api.model.Author">
@@ -71,7 +64,7 @@
 	<select id="countByIsbn" resultType="int">
 		SELECT COUNT(*)
 		FROM books
-		WHERE isbn = #{isbn}
+		WHERE isbn = #{isbn} AND deleted_at IS NULL
 		<if test="excludeId != null">
 			AND id != #{excludeId}
 		</if>
@@ -88,9 +81,11 @@
 		WHERE id = #{id}
 	</update>
 
-	<delete id="delete">
-		DELETE FROM books WHERE id = #{id}
-	</delete>
+	<update id="softDelete">
+		UPDATE books
+		SET deleted_at = CURRENT_TIMESTAMP
+		WHERE id = #{id} AND deleted_at IS NULL
+	</update>
 
 	<insert id="insertBookAuthors">
 		INSERT INTO book_authors (book_id, author_id)
@@ -114,10 +109,6 @@
 
 	<delete id="deleteBookCategories">
 		DELETE FROM book_categories WHERE book_id = #{bookId}
-	</delete>
-
-	<delete id="deleteLoans">
-		DELETE FROM loans WHERE book_id = #{bookId}
 	</delete>
 
 	<select id="countActiveLoans" resultType="int">

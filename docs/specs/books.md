@@ -67,7 +67,7 @@ POST /books
    - `title`: 1〜255文字
    - `isbn`: ISBN-13形式
    - `publishedYear`: 指定する場合 1000〜当年以下
-3. `isbn` の一意性を確認する。既に登録済みの場合は `409 Conflict`（[共通処理](./common.md#一意制約違反)）
+3. `isbn` の一意性を確認する（未削除の書籍の中で判定する）。既に登録済みの場合は `409 Conflict`（[共通処理](./common.md#一意制約違反)）
 4. `authorIds` / `categoryIds` に対して[参照先IDの存在チェック](./common.md#参照先idの存在チェック)を行う
 5. 書籍レコードを `INSERT` する
 6. `book_authors` / `book_categories` に中間テーブルのレコードを `INSERT` する
@@ -85,7 +85,7 @@ PUT /books/{id}
 
 1. `id` に一致する書籍が存在するか確認する。存在しない場合は `404 Not Found`
 2. リクエストボディを登録時と同じルールで検証する（[登録の処理ステップ2](#登録)）。不正な場合は `400 Bad Request`
-3. `isbn` を変更する場合、変更後の値が自分以外の書籍と重複していないか確認する。重複していれば `409 Conflict`
+3. `isbn` を変更する場合、変更後の値が自分以外の未削除の書籍と重複していないか確認する。重複していれば `409 Conflict`
 4. `authorIds` / `categoryIds` に対して[参照先IDの存在チェック](./common.md#参照先idの存在チェック)を行う
 5. 書籍レコードを `UPDATE` する
 6. `book_authors` / `book_categories` を一旦削除し、リクエスト内容で再登録する
@@ -97,10 +97,16 @@ PUT /books/{id}
 DELETE /books/{id}
 ```
 
+書籍は物理削除せず**論理削除**とする（貸出履歴を監査証跡として保持するため）。
+
 **処理ステップ**
 
 1. `id` に一致する書籍が存在するか確認する。存在しない場合は `404 Not Found`
 2. 当該書籍に紐づく `loans` の中に `returned_at` が `null`（貸出中）のレコードがないか確認する。存在する場合は `409 Conflict`（[共通処理](./common.md#参照整合性による削除制限)）
-3. `book_authors` / `book_categories` の関連レコードを削除する
-4. 書籍レコードを削除する
-5. `204 No Content` を返す
+3. `deleted_at` に現在時刻を設定する。`book_authors` / `book_categories` / `loans` のレコードは保持する
+4. `204 No Content` を返す
+
+**論理削除の扱い**
+
+- 論理削除された書籍は一覧取得・詳細取得の対象外となる（`404 Not Found`）
+- 論理削除された書籍の ISBN は再登録できる（ISBN の一意性は未削除の書籍の中で判定する）

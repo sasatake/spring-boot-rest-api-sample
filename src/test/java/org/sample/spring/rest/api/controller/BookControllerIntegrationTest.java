@@ -1,5 +1,6 @@
 package org.sample.spring.rest.api.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -196,7 +197,7 @@ class BookControllerIntegrationTest {
 	}
 
 	@Test
-	void deleteBookRemovesBookAndRelations() throws Exception {
+	void deleteBookSoftDeletesAndHidesFromApi() throws Exception {
 		long authorId = insertAuthor("夏目漱石");
 		long categoryId = insertCategory("小説");
 		long bookId = createBook("吾輩は猫である", "978-4-10-101035-9", authorId, categoryId);
@@ -206,6 +207,30 @@ class BookControllerIntegrationTest {
 
 		mockMvc.perform(get("/books/" + bookId))
 				.andExpect(status().isNotFound());
+
+		mockMvc.perform(get("/books"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalElements").value(0));
+
+		// レコード自体は deleted_at 付きで残り、関連も保持される
+		assertThat(jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM books WHERE id = ? AND deleted_at IS NOT NULL", Integer.class, bookId)).isEqualTo(1);
+		assertThat(jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM book_authors WHERE book_id = ?", Integer.class, bookId)).isEqualTo(1);
+	}
+
+	@Test
+	void isbnOfDeletedBookCanBeReused() throws Exception {
+		long authorId = insertAuthor("夏目漱石");
+		long bookId = createBook("吾輩は猫である", "978-4-10-101035-9", authorId, null);
+
+		mockMvc.perform(delete("/books/" + bookId))
+				.andExpect(status().isNoContent());
+
+		mockMvc.perform(post("/books")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(bookJson("吾輩は猫である(新装版)", "978-4-10-101035-9", 1905, authorId, null)))
+				.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -224,6 +249,10 @@ class BookControllerIntegrationTest {
 
 		mockMvc.perform(delete("/books/" + bookId))
 				.andExpect(status().isNoContent());
+
+		// 貸出履歴は削除後も監査証跡として保持される
+		assertThat(jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM loans WHERE book_id = ?", Integer.class, bookId)).isEqualTo(1);
 	}
 
 	@Test
