@@ -1,0 +1,8 @@
+CREATE TABLE loans (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    book_id BIGINT NOT NULL REFERENCES books (id),
+    member_id BIGINT NOT NULL REFERENCES members (id),
+    loaned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    due_date DATE NOT NULL,
+    returned_at TIMESTAMP
+);

@@ -14,7 +14,7 @@ Spring Boot を用いた図書館管理システムの REST API。
 | ビルドツール | Gradle 9.5.1 |
 | ORM | MyBatis 4.0.1 |
 | DB マイグレーション | Flyway |
-| テスト | JUnit 5 / @WebMvcTest |
+| テスト | JUnit 5 / @WebMvcTest / @SpringBootTest(PostgreSQL 結合テスト) |
 | CI | GitHub Actions |
 | ローカル環境 | Docker Compose |
 
@@ -34,3 +34,15 @@ docker compose up -d
 # アプリ起動
 ./gradlew bootRun
 ```
+
+## テスト実行
+
+結合テストは `library_test` データベース(`docker compose up -d` で自動作成)に接続する。
+
+```bash
+./gradlew test
+```
+
+※ 既存の `postgres_data` ボリュームがある場合、`library_test` は作成済みでないため
+`docker compose down -v && docker compose up -d` で再作成するか、手動で
+`CREATE DATABASE library_test OWNER library;` を実行する。

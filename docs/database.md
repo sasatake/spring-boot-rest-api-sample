@@ -10,6 +10,7 @@ erDiagram
         varchar isbn UK
         int published_year
         text description
+        timestamp deleted_at
     }
     authors {
         bigint id PK
@@ -59,9 +60,10 @@ erDiagram
 |---|---|---|
 | id | bigint | PK |
 | title | varchar | タイトル |
-| isbn | varchar | ISBN（一意） |
+| isbn | varchar | ISBN（未削除の書籍の中で一意） |
 | published_year | int | 出版年 |
 | description | text | 説明 |
+| deleted_at | timestamp | 削除日時（null = 有効。論理削除） |
 
 ### authors（著者）
 
@@ -109,6 +111,7 @@ erDiagram
 
 ## ビジネスルール
 
+- `books.deleted_at` が非 `null` の場合、当該書籍は論理削除済み（取得系 API の対象外。貸出履歴は保持される）
 - `loans.returned_at` が `null` の場合、当該書籍は貸出中
 - `loans.due_date` を過ぎており `returned_at` が `null` の場合、延滞
 - 貸出中の書籍は別の会員には貸し出せない

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sample.spring.rest.api.mapper.BookMapper">
+
+	<resultMap id="bookResultMap" type="org.sample.spring.rest.api.model.Book">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="isbn" column="isbn"/>
+		<result property="publishedYear" column="published_year"/>
+		<result property="description" column="description"/>
+		<collection property="authors" column="id" select="selectAuthorsByBookId"/>
+		<collection property="categories" column="id" select="selectCategoriesByBookId"/>
+	</resultMap>
+
+	<sql id="listConditions">
+		WHERE b.deleted_at IS NULL
+		<if test="title != null and title != ''">
+			AND b.title ILIKE '%' || #{title} || '%'
+		</if>
+		<if test="categoryId != null">
+			AND EXISTS (
+				SELECT 1 FROM book_categories bc
+				WHERE bc.book_id = b.id AND bc.category_id = #{categoryId}
+			)
+		</if>
+	</sql>
+
+	<select id="selectBooks" resultMap="bookResultMap">
+		SELECT b.id, b.title, b.isbn, b.published_year, b.description
+		FROM books b
+		<include refid="listConditions"/>
+		ORDER BY b.id
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countBooks" resultType="long">
+		SELECT COUNT(*)
+		FROM books b
+		<include refid="listConditions"/>
+	</select>
+
+	<select id="selectById" resultMap="bookResultMap">
+		SELECT id, title, isbn, published_year, description
+		FROM books
+		WHERE id = #{id} AND deleted_at IS NULL
+	</select>
+
+	<select id="selectAuthorsByBookId" resultType="org.sample.spring.rest.api.model.Author">
+		SELECT a.id, a.name
+		FROM authors a
+		INNER JOIN book_authors ba ON ba.author_id = a.id
+		WHERE ba.book_id = #{id}
+		ORDER BY a.id
+	</select>
+
+	<select id="selectCategoriesByBookId" resultType="org.sample.spring.rest.api.model.Category">
+		SELECT c.id, c.name
+		FROM categories c
+		INNER JOIN book_categories bc ON bc.category_id = c.id
+		WHERE bc.book_id = #{id}
+		ORDER BY c.id
+	</select>
+
+	<select id="countByIsbn" resultType="int">
+		SELECT COUNT(*)
+		FROM books
+		WHERE isbn = #{isbn} AND deleted_at IS NULL
+		<if test="excludeId != null">
+			AND id != #{excludeId}
+		</if>
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO books (title, isbn, published_year, description)
+		VALUES (#{title}, #{isbn}, #{publishedYear}, #{description})
+	</insert>
+
+	<update id="update">
+		UPDATE books
+		SET title = #{title}, isbn = #{isbn}, published_year = #{publishedYear}, description = #{description}
+		WHERE id = #{id}
+	</update>
+
+	<update id="softDelete">
+		UPDATE books
+		SET deleted_at = CURRENT_TIMESTAMP
+		WHERE id = #{id} AND deleted_at IS NULL
+	</update>
+
+	<insert id="insertBookAuthors">
+		INSERT INTO book_authors (book_id, author_id)
+		VALUES
+		<foreach item="authorId" collection="authorIds" separator=",">
+			(#{bookId}, #{authorId})
+		</foreach>
+	</insert>
+
+	<insert id="insertBookCategories">
+		INSERT INTO book_categories (book_id, category_id)
+		VALUES
+		<foreach item="categoryId" collection="categoryIds" separator=",">
+			(#{bookId}, #{categoryId})
+		</foreach>
+	</insert>
+
+	<delete id="deleteBookAuthors">
+		DELETE FROM book_authors WHERE book_id = #{bookId}
+	</delete>
+
+	<delete id="deleteBookCategories">
+		DELETE FROM book_categories WHERE book_id = #{bookId}
+	</delete>
+
+	<select id="countActiveLoans" resultType="int">
+		SELECT COUNT(*)
+		FROM loans
+		WHERE book_id = #{bookId} AND returned_at IS NULL
+	</select>
+</mapper>
