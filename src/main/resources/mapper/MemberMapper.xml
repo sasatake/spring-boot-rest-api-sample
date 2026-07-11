@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sample.spring.rest.api.mapper.MemberMapper">
+
+	<select id="selectMembers" resultType="org.sample.spring.rest.api.model.Member">
+		SELECT id, name, email, phone, registered_at
+		FROM members
+		WHERE deleted_at IS NULL
+		ORDER BY registered_at DESC, id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countMembers" resultType="long">
+		SELECT COUNT(*)
+		FROM members
+		WHERE deleted_at IS NULL
+	</select>
+
+	<select id="selectById" resultType="org.sample.spring.rest.api.model.Member">
+		SELECT id, name, email, phone, registered_at
+		FROM members
+		WHERE id = #{id} AND deleted_at IS NULL
+	</select>
+
+	<select id="countByEmail" resultType="int">
+		SELECT COUNT(*)
+		FROM members
+		WHERE email = #{email} AND deleted_at IS NULL
+		<if test="excludeId != null">
+			AND id != #{excludeId}
+		</if>
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO members (name, email, phone)
+		VALUES (#{name}, #{email}, #{phone})
+	</insert>
+
+	<update id="update">
+		UPDATE members
+		SET name = #{name}, email = #{email}, phone = #{phone}
+		WHERE id = #{id}
+	</update>
+
+	<update id="softDelete">
+		UPDATE members
+		SET deleted_at = CURRENT_TIMESTAMP
+		WHERE id = #{id} AND deleted_at IS NULL
+	</update>
+
+	<select id="countActiveLoans" resultType="int">
+		SELECT COUNT(*)
+		FROM loans
+		WHERE member_id = #{memberId} AND returned_at IS NULL
+	</select>
+</mapper>

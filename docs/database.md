@@ -26,6 +26,7 @@ erDiagram
         varchar email UK
         varchar phone
         timestamp registered_at
+        timestamp deleted_at
     }
     loans {
         bigint id PK
@@ -85,9 +86,10 @@ erDiagram
 |---|---|---|
 | id | bigint | PK |
 | name | varchar | 氏名 |
-| email | varchar | メールアドレス（一意） |
+| email | varchar | メールアドレス（未削除の会員の中で一意） |
 | phone | varchar | 電話番号 |
 | registered_at | timestamp | 登録日時 |
+| deleted_at | timestamp | 削除日時（null = 有効。論理削除） |
 
 ### loans（貸出）
 
@@ -112,6 +114,7 @@ erDiagram
 ## ビジネスルール
 
 - `books.deleted_at` が非 `null` の場合、当該書籍は論理削除済み（取得系 API の対象外。貸出履歴は保持される）
+- `members.deleted_at` が非 `null` の場合、当該会員は論理削除済み（取得系 API の対象外。貸出履歴は保持される）
 - `loans.returned_at` が `null` の場合、当該書籍は貸出中
 - `loans.due_date` を過ぎており `returned_at` が `null` の場合、延滞
 - 貸出中の書籍は別の会員には貸し出せない
@@ -127,5 +130,6 @@ src/main/resources/db/migration/
 ├── V4__create_book_authors.sql
 ├── V5__create_book_categories.sql
 ├── V6__create_members.sql
-└── V7__create_loans.sql
+├── V7__create_loans.sql
+└── V8__add_deleted_at_to_members.sql
 ```
