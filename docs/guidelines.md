@@ -37,12 +37,15 @@
 - Service は業務例外(`NotFoundException` / `ConflictException` / `InvalidRequestException`)を投げるだけにする
 - HTTP ステータスと共通エラー形式([common.md](./specs/common.md#エラーレスポンス形式))への変換は `GlobalExceptionHandler`(`@RestControllerAdvice`)に集約する
 - `errors` 配列はバリデーションエラー(400)の場合のみ含める
+- DB 制約違反(`DataIntegrityViolationException`)は `409 Conflict` に変換する。並行リクエストが Service の事前チェックをすり抜けて DB 制約に落ちた場合に、500 ではなく一貫したエラーを返すための安全網
 
 ## データベース
 
 - スキーマ変更は必ず Flyway マイグレーション(`V{連番}__{内容}.sql`)で行う。適用済みのマイグレーションファイルは変更しない
 - PK は `BIGINT GENERATED ALWAYS AS IDENTITY`
 - 一意制約・外部キーは DB に定義する(前述の「最後の砦」)
+- **削除は履歴保持を考慮する**: 監査証跡(貸出履歴など)から参照されるエンティティは物理削除せず、`deleted_at` による論理削除とする(例: 書籍)。取得系・一意性判定は未削除のレコードのみを対象とする
+- 論理削除するテーブルの一意制約は部分一意インデックス(`CREATE UNIQUE INDEX ... WHERE deleted_at IS NULL`)で定義し、削除済みレコードの値を再登録可能にする
 
 ## MyBatis
 
