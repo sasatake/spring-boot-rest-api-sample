@@ -8,4 +8,30 @@
 		WHERE id IN
 		<foreach item="id" collection="ids" open="(" separator="," close=")">#{id}</foreach>
 	</select>
+
+	<select id="selectAll" resultType="org.sample.spring.rest.api.model.Category">
+		SELECT id, name
+		FROM categories
+		ORDER BY name, id
+	</select>
+
+	<select id="selectById" resultType="org.sample.spring.rest.api.model.Category">
+		SELECT id, name
+		FROM categories
+		WHERE id = #{id}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO categories (name) VALUES (#{name})
+	</insert>
+
+	<delete id="delete">
+		DELETE FROM categories WHERE id = #{id}
+	</delete>
+
+	<select id="countBookReferences" resultType="int">
+		SELECT COUNT(*)
+		FROM book_categories
+		WHERE category_id = #{categoryId}
+	</select>
 </mapper>

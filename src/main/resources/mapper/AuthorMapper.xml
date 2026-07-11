@@ -8,4 +8,39 @@
 		WHERE id IN
 		<foreach item="id" collection="ids" open="(" separator="," close=")">#{id}</foreach>
 	</select>
+
+	<select id="selectAuthors" resultType="org.sample.spring.rest.api.model.Author">
+		SELECT id, name
+		FROM authors
+		ORDER BY name, id
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countAuthors" resultType="long">
+		SELECT COUNT(*) FROM authors
+	</select>
+
+	<select id="selectById" resultType="org.sample.spring.rest.api.model.Author">
+		SELECT id, name
+		FROM authors
+		WHERE id = #{id}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO authors (name) VALUES (#{name})
+	</insert>
+
+	<update id="update">
+		UPDATE authors SET name = #{name} WHERE id = #{id}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM authors WHERE id = #{id}
+	</delete>
+
+	<select id="countBookReferences" resultType="int">
+		SELECT COUNT(*)
+		FROM book_authors
+		WHERE author_id = #{authorId}
+	</select>
 </mapper>
