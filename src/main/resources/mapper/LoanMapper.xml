@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sample.spring.rest.api.mapper.LoanMapper">
+
+	<resultMap id="loanResultMap" type="org.sample.spring.rest.api.model.Loan">
+		<id property="id" column="id"/>
+		<result property="loanedAt" column="loaned_at"/>
+		<result property="dueDate" column="due_date"/>
+		<result property="returnedAt" column="returned_at"/>
+		<association property="book" column="book_id" select="selectLoanBook"/>
+		<association property="member" column="member_id" select="selectLoanMember"/>
+	</resultMap>
+
+	<!-- 貸出履歴の表示用。論理削除済みの書籍・会員も履歴上は表示するため deleted_at では絞らない -->
+	<resultMap id="loanBookResultMap" type="org.sample.spring.rest.api.model.Book">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="isbn" column="isbn"/>
+		<result property="publishedYear" column="published_year"/>
+		<result property="description" column="description"/>
+		<collection property="authors" column="id"
+				select="org.sample.spring.rest.api.mapper.BookMapper.selectAuthorsByBookId"/>
+		<collection property="categories" column="id"
+				select="org.sample.spring.rest.api.mapper.BookMapper.selectCategoriesByBookId"/>
+	</resultMap>
+
+	<select id="selectLoanBook" resultMap="loanBookResultMap">
+		SELECT id, title, isbn, published_year, description
+		FROM books
+		WHERE id = #{id}
+	</select>
+
+	<select id="selectLoanMember" resultType="org.sample.spring.rest.api.model.Member">
+		SELECT id, name, email, phone, registered_at
+		FROM members
+		WHERE id = #{id}
+	</select>
+
+	<sql id="listConditions">
+		<where>
+			<if test="memberId != null">
+				member_id = #{memberId}
+			</if>
+			<if test="bookId != null">
+				AND book_id = #{bookId}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectLoans" resultMap="loanResultMap">
+		SELECT id, book_id, member_id, loaned_at, due_date, returned_at
+		FROM loans
+		<include refid="listConditions"/>
+		ORDER BY loaned_at DESC, id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countLoans" resultType="long">
+		SELECT COUNT(*)
+		FROM loans
+		<include refid="listConditions"/>
+	</select>
+
+	<select id="selectOverdue" resultMap="loanResultMap">
+		SELECT id, book_id, member_id, loaned_at, due_date, returned_at
+		FROM loans
+		WHERE returned_at IS NULL AND due_date &lt; CURRENT_DATE
+		ORDER BY due_date, id
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countOverdue" resultType="long">
+		SELECT COUNT(*)
+		FROM loans
+		WHERE returned_at IS NULL AND due_date &lt; CURRENT_DATE
+	</select>
+
+	<select id="selectById" resultMap="loanResultMap">
+		SELECT id, book_id, member_id, loaned_at, due_date, returned_at
+		FROM loans
+		WHERE id = #{id}
+	</select>
+
+	<select id="countActiveByBookId" resultType="int">
+		SELECT COUNT(*)
+		FROM loans
+		WHERE book_id = #{bookId} AND returned_at IS NULL
+	</select>
+
+	<select id="countBook" resultType="int">
+		SELECT COUNT(*)
+		FROM books
+		WHERE id = #{bookId} AND deleted_at IS NULL
+	</select>
+
+	<select id="countMember" resultType="int">
+		SELECT COUNT(*)
+		FROM members
+		WHERE id = #{memberId} AND deleted_at IS NULL
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="loan.id" keyColumn="id">
+		INSERT INTO loans (book_id, member_id, due_date)
+		VALUES (#{bookId}, #{memberId}, CURRENT_DATE + 14)
+	</insert>
+
+	<update id="markReturned">
+		UPDATE loans
+		SET returned_at = CURRENT_TIMESTAMP
+		WHERE id = #{id} AND returned_at IS NULL
+	</update>
+</mapper>
