@@ -117,7 +117,7 @@ erDiagram
 - `members.deleted_at` が非 `null` の場合、当該会員は論理削除済み（取得系 API の対象外。貸出履歴は保持される）
 - `loans.returned_at` が `null` の場合、当該書籍は貸出中
 - `loans.due_date` を過ぎており `returned_at` が `null` の場合、延滞
-- 貸出中の書籍は別の会員には貸し出せない
+- 貸出中の書籍は別の会員には貸し出せない（部分一意インデックス `loans(book_id) WHERE returned_at IS NULL` で並行リクエスト時も保証）
 - 蔵書（BookCopy）は今後の拡張として予約
 
 ## マイグレーション構成（Flyway）
@@ -131,5 +131,6 @@ src/main/resources/db/migration/
 ├── V5__create_book_categories.sql
 ├── V6__create_members.sql
 ├── V7__create_loans.sql
-└── V8__add_deleted_at_to_members.sql
+├── V8__add_deleted_at_to_members.sql
+└── V9__add_active_loan_unique_index.sql
 ```
