@@ -35,6 +35,11 @@ docker compose up -d
 ./gradlew bootRun
 ```
 
+起動後、以下で API 仕様を確認できる（springdoc-openapi による自動生成）。
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
 ## テスト実行
 
 結合テストは `library_test` データベース(`docker compose up -d` で自動作成)に接続する。

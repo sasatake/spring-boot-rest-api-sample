@@ -1,3 +1,7 @@
+# このファイルは設計時に作成した手書きの API 仕様です。
+# 実行時の最新仕様は springdoc-openapi により自動生成されます:
+#   - Swagger UI: http://localhost:8080/swagger-ui.html
+#   - OpenAPI JSON: http://localhost:8080/v3/api-docs
 openapi: 3.0.3
 info:
   title: 図書館管理システム API
