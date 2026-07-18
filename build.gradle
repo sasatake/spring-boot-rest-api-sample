@@ -2,6 +2,10 @@ plugins {
 	id 'org.springframework.boot' version '4.0.6'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'java'
+	id 'jacoco'
+	id 'checkstyle'
+	id 'pmd'
+	id 'com.github.spotbugs' version '6.5.9'
 }
 
 group = 'org.sample'
@@ -32,4 +36,46 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy tasks.named('jacocoTestReport')
+}
+
+jacoco {
+	toolVersion = '0.8.15'
+}
+
+tasks.named('jacocoTestReport') {
+	dependsOn tasks.named('test')
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+checkstyle {
+	toolVersion = '13.8.0'
+	configFile = file('config/checkstyle/checkstyle.xml')
+	// 警告のみ運用: 違反があってもビルドは失敗させない
+	ignoreFailures = true
+}
+
+pmd {
+	toolVersion = '7.26.0'
+	ruleSetFiles = files('config/pmd/ruleset.xml')
+	ruleSets = []
+	ignoreFailures = true
+	consoleOutput = true
+}
+
+spotbugs {
+	toolVersion = '4.10.3'
+	excludeFilter = file('config/spotbugs/exclude.xml')
+	// 警告のみ運用: 違反があってもビルドは失敗させない
+	ignoreFailures = true
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+	reports {
+		html.required = true
+		xml.required = true
+	}
 }

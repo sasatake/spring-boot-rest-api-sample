@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="library-api-rules"
+		xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+	<description>図書館管理システム REST API の静的解析ルール</description>
+
+	<rule ref="category/java/bestpractices.xml">
+		<!-- ログはガード不要な軽量な使い方のみのため除外 -->
+		<exclude name="GuardLogStatement"/>
+		<!-- MockMvc の andExpect をアサーションとして認識しないため除外 -->
+		<exclude name="UnitTestShouldIncludeAssert"/>
+		<exclude name="UnitTestContainsTooManyAsserts"/>
+	</rule>
+
+	<rule ref="category/java/errorprone.xml">
+		<!-- 直列化は使用しないため除外 -->
+		<exclude name="MissingSerialVersionUID"/>
+		<!-- テストデータや SQL の文字列は意図的に繰り返すため除外 -->
+		<exclude name="AvoidDuplicateLiterals"/>
+	</rule>
+</ruleset>

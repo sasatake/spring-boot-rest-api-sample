@@ -33,7 +33,8 @@ class AuthorControllerIntegrationTest {
 	@BeforeEach
 	void cleanUp() {
 		jdbcTemplate.execute(
-				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members "
+						+ "RESTART IDENTITY CASCADE");
 	}
 
 	@Test
@@ -132,7 +133,8 @@ class AuthorControllerIntegrationTest {
 	void deleteAuthorReferencedByBookReturnsConflict() throws Exception {
 		long authorId = insertAuthor("夏目漱石");
 		long bookId = jdbcTemplate.queryForObject(
-				"INSERT INTO books (title, isbn) VALUES ('吾輩は猫である', '978-4-10-101035-9') RETURNING id", Long.class);
+				"INSERT INTO books (title, isbn) VALUES ('吾輩は猫である', '978-4-10-101035-9') RETURNING id",
+				Long.class);
 		jdbcTemplate.update("INSERT INTO book_authors (book_id, author_id) VALUES (?, ?)", bookId, authorId);
 
 		mockMvc.perform(delete("/authors/" + authorId))

@@ -61,6 +61,11 @@
 - **テストデータの作り方**: テスト対象の機能は API 経由で操作し、前提データ(未実装の機能のレコード)は `JdbcTemplate` で直接投入する。対象機能の API が実装されたら置き換える
 - DB に依存しない複雑なロジックが増えたら、`@WebMvcTest` や Service の単体テストを併用する(結合テストで仕様全体、単体テストで細かい分岐)
 
+## 静的解析・カバレッジ
+
+- Checkstyle(`config/checkstyle/checkstyle.xml`)・PMD(`config/pmd/ruleset.xml`)・SpotBugs(`config/spotbugs/exclude.xml`)を `./gradlew check` で実行する。**警告のみ運用**(CI は落とさない)だが、新規・変更コードで警告を増やさない
+- カバレッジは JaCoCo で計測し、PR にレポートがコメントされる。数値目標は設けないが、結合テストの方針(仕様の処理ステップを網羅)を守っていれば自然と維持される
+
 ## API 設計
 
 - ページネーション・エラー形式・ステータスコードは [common.md](./specs/common.md) に従う
