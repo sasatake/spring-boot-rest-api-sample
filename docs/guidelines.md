@@ -63,7 +63,7 @@
 
 ## 静的解析・カバレッジ
 
-- Checkstyle(`config/checkstyle/checkstyle.xml`)と PMD(`config/pmd/ruleset.xml`)を `./gradlew check` で実行する。**警告のみ運用**(CI は落とさない)だが、新規・変更コードで警告を増やさない
+- Checkstyle(`config/checkstyle/checkstyle.xml`)・PMD(`config/pmd/ruleset.xml`)・SpotBugs(`config/spotbugs/exclude.xml`)を `./gradlew check` で実行する。**警告のみ運用**(CI は落とさない)だが、新規・変更コードで警告を増やさない
 - カバレッジは JaCoCo で計測し、PR にレポートがコメントされる。数値目標は設けないが、結合テストの方針(仕様の処理ステップを網羅)を守っていれば自然と維持される
 
 ## API 設計
