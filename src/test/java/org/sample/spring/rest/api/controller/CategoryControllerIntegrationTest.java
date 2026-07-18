@@ -32,7 +32,8 @@ class CategoryControllerIntegrationTest {
 	@BeforeEach
 	void cleanUp() {
 		jdbcTemplate.execute(
-				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members "
+						+ "RESTART IDENTITY CASCADE");
 	}
 
 	@Test
@@ -87,7 +88,8 @@ class CategoryControllerIntegrationTest {
 	void deleteCategoryReferencedByBookReturnsConflict() throws Exception {
 		long categoryId = insertCategory("小説");
 		long bookId = jdbcTemplate.queryForObject(
-				"INSERT INTO books (title, isbn) VALUES ('吾輩は猫である', '978-4-10-101035-9') RETURNING id", Long.class);
+				"INSERT INTO books (title, isbn) VALUES ('吾輩は猫である', '978-4-10-101035-9') RETURNING id",
+				Long.class);
 		jdbcTemplate.update("INSERT INTO book_categories (book_id, category_id) VALUES (?, ?)", bookId, categoryId);
 
 		mockMvc.perform(delete("/categories/" + categoryId))

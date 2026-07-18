@@ -40,7 +40,8 @@ class LoanControllerIntegrationTest {
 	@BeforeEach
 	void cleanUp() {
 		jdbcTemplate.execute(
-				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members "
+						+ "RESTART IDENTITY CASCADE");
 	}
 
 	@Test
@@ -199,7 +200,8 @@ class LoanControllerIntegrationTest {
 
 	private void insertLoan(long bookId, long memberId, String loanedAt, String returnedAt) {
 		jdbcTemplate.update(
-				"INSERT INTO loans (book_id, member_id, loaned_at, due_date, returned_at) VALUES (?, ?, ?::timestamp, ?::timestamp + INTERVAL '14 days', ?::timestamp)",
+				"INSERT INTO loans (book_id, member_id, loaned_at, due_date, returned_at) "
+						+ "VALUES (?, ?, ?::timestamp, ?::timestamp + INTERVAL '14 days', ?::timestamp)",
 				bookId, memberId, loanedAt, loanedAt, returnedAt);
 	}
 

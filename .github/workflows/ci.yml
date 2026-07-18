@@ -33,6 +33,37 @@ jobs:
           distribution: 'corretto'
       - name: Run tests
         run: ./gradlew test
+      - name: Run static analysis
+        run: ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest
+      - name: Add coverage report to PR
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Coverage
+      - name: Write static analysis summary
+        if: always()
+        run: |
+          {
+            echo "## Static Analysis (warnings only)"
+            for f in build/reports/checkstyle/*.xml; do
+              [ -f "$f" ] || continue
+              count=$(grep -c '<error' "$f" || true)
+              echo "- Checkstyle $(basename "$f" .xml): ${count} warnings"
+            done
+            for f in build/reports/pmd/*.xml; do
+              [ -f "$f" ] || continue
+              count=$(grep -c '<violation' "$f" || true)
+              echo "- PMD $(basename "$f" .xml): ${count} violations"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: build/reports
       - name: Publish test summary
         uses: mikepenz/action-junit-report@v4
         if: always()

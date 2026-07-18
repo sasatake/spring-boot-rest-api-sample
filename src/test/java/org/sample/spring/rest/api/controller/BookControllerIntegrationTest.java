@@ -39,7 +39,8 @@ class BookControllerIntegrationTest {
 	@BeforeEach
 	void cleanUp() {
 		jdbcTemplate.execute(
-				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members "
+						+ "RESTART IDENTITY CASCADE");
 	}
 
 	@Test

@@ -15,6 +15,8 @@ Spring Boot を用いた図書館管理システムの REST API。
 | ORM | MyBatis 4.0.1 |
 | DB マイグレーション | Flyway |
 | テスト | JUnit 5 / @WebMvcTest / @SpringBootTest(PostgreSQL 結合テスト) |
+| カバレッジ | JaCoCo(PR にレポートをコメント) |
+| 静的解析 | Checkstyle / PMD(警告のみ、CI は落とさない) |
 | CI | GitHub Actions |
 | ローカル環境 | Docker Compose |
 

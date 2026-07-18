@@ -1,6 +1,7 @@
 package org.sample.spring.rest.api.exception;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class GlobalExceptionHandler {
 		if (e instanceof org.springframework.web.ErrorResponse springError) {
 			int status = springError.getStatusCode().value();
 			HttpStatus resolved = HttpStatus.resolve(status);
-			String message = resolved != null ? resolved.getReasonPhrase().toLowerCase() : "request error";
+			String message = resolved != null ? resolved.getReasonPhrase().toLowerCase(Locale.ROOT) : "request error";
 			return ResponseEntity.status(status).body(new ErrorResponse(status, message, null));
 		}
 		logger.error("unexpected error", e);
