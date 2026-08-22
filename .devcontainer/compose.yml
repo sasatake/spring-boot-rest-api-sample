@@ -1,0 +1,21 @@
+# Dev Container 用のオーバーレイ。ルートの docker-compose.yml と組み合わせて使う。
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/java:25
+    command: sleep infinity
+    volumes:
+      - .:/workspaces/spring-boot-rest-api-sample:cached
+      - gradle-cache:/home/vscode/.gradle
+    # アプリ・テストとも localhost:5432 で PostgreSQL に接続する設定のため、
+    # postgres サービスとネットワーク名前空間を共有する
+    network_mode: service:postgres
+    depends_on:
+      - postgres
+
+  postgres:
+    ports:
+      # app サービスとネットワークを共有しているため、アプリの 8080 もここで公開する
+      - "8080:8080"
+
+volumes:
+  gradle-cache:

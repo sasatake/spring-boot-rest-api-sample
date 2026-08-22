@@ -1,0 +1,16 @@
+{
+  "name": "spring-boot-rest-api-sample",
+  "dockerComposeFile": ["../docker-compose.yml", "compose.yml"],
+  "service": "app",
+  "workspaceFolder": "/workspaces/spring-boot-rest-api-sample",
+  "remoteUser": "vscode",
+  "customizations": {
+    "zed": {
+      "extensions": ["java"]
+    },
+    "vscode": {
+      "extensions": ["vscjava.vscode-java-pack"]
+    }
+  },
+  "postCreateCommand": "sudo chown vscode:vscode /home/vscode/.gradle && ./gradlew --version"
+}
