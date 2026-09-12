@@ -34,7 +34,8 @@ class MemberControllerIntegrationTest {
 	@BeforeEach
 	void cleanUp() {
 		jdbcTemplate.execute(
-				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE loans, book_authors, book_categories, books, authors, categories, members "
+						+ "RESTART IDENTITY CASCADE");
 	}
 
 	@Test
@@ -74,9 +75,11 @@ class MemberControllerIntegrationTest {
 	@Test
 	void listMembersReturnsRegisteredAtDescendingPage() throws Exception {
 		jdbcTemplate.update(
-				"INSERT INTO members (name, email, registered_at) VALUES ('先に登録', 'first@example.com', '2026-01-01 10:00:00')");
+				"INSERT INTO members (name, email, registered_at) "
+						+ "VALUES ('先に登録', 'first@example.com', '2026-01-01 10:00:00')");
 		jdbcTemplate.update(
-				"INSERT INTO members (name, email, registered_at) VALUES ('後に登録', 'second@example.com', '2026-02-01 10:00:00')");
+				"INSERT INTO members (name, email, registered_at) "
+						+ "VALUES ('後に登録', 'second@example.com', '2026-02-01 10:00:00')");
 
 		mockMvc.perform(get("/members"))
 				.andExpect(status().isOk())
@@ -154,7 +157,8 @@ class MemberControllerIntegrationTest {
 		long memberId = insertMember("山田太郎", "taro@example.com");
 		long bookId = insertBook("吾輩は猫である", "978-4-10-101035-9");
 		jdbcTemplate.update(
-				"INSERT INTO loans (book_id, member_id, due_date, returned_at) VALUES (?, ?, CURRENT_DATE, CURRENT_TIMESTAMP)",
+				"INSERT INTO loans (book_id, member_id, due_date, returned_at) "
+						+ "VALUES (?, ?, CURRENT_DATE, CURRENT_TIMESTAMP)",
 				bookId, memberId);
 
 		mockMvc.perform(delete("/members/" + memberId))
@@ -165,7 +169,8 @@ class MemberControllerIntegrationTest {
 
 		// レコードは deleted_at 付きで残り、貸出履歴も保持される
 		assertThat(jdbcTemplate.queryForObject(
-				"SELECT COUNT(*) FROM members WHERE id = ? AND deleted_at IS NOT NULL", Integer.class, memberId)).isEqualTo(1);
+				"SELECT COUNT(*) FROM members WHERE id = ? AND deleted_at IS NOT NULL", Integer.class, memberId))
+				.isEqualTo(1);
 		assertThat(jdbcTemplate.queryForObject(
 				"SELECT COUNT(*) FROM loans WHERE member_id = ?", Integer.class, memberId)).isEqualTo(1);
 	}

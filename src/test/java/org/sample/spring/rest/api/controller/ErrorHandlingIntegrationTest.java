@@ -41,7 +41,8 @@ class ErrorHandlingIntegrationTest {
 		mockMvc.perform(post("/books")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-						{"title": "t", "isbn": "978-4-10-101035-9", "publishedYear": "not-a-number", "authorIds": [1]}
+						{"title": "t", "isbn": "978-4-10-101035-9",
+							"publishedYear": "not-a-number", "authorIds": [1]}
 						"""))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(400));
