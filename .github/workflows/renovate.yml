@@ -11,7 +11,8 @@ on:
         type: boolean
         default: false
 
-# Renovate は RENOVATE_TOKEN(PAT) で動作するため GITHUB_TOKEN の権限は不要
+# Renovate は GitHub App のインストールトークンで動作するため
+# GITHUB_TOKEN の権限は不要
 permissions: {}
 
 # 前回の実行と重ならないようにする(同じブランチを二重に作らないため)
@@ -23,6 +24,17 @@ jobs:
   renovate:
     runs-on: ubuntu-latest
     steps:
+      # 個人の PAT は置かず、自前 GitHub App から 1 時間有効の
+      # インストールトークンを都度発行する。
+      # このトークンで作られた PR は CI が起動する(GITHUB_TOKEN と違い
+      # 特別扱いされない)ので、Renovate PR もテストで検証される。
+      - name: Generate installation token
+        id: app-token
+        uses: actions/create-github-app-token@v3.2.0
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -34,7 +46,7 @@ jobs:
         uses: renovatebot/github-action@v46.3.4
         with:
           configurationFile: .github/renovate-global.js
-          token: ${{ secrets.RENOVATE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
         env:
           LOG_LEVEL: debug
           RENOVATE_DRY_RUN: full
@@ -44,6 +56,6 @@ jobs:
         uses: renovatebot/github-action@v46.3.4
         with:
           configurationFile: .github/renovate-global.js
-          token: ${{ secrets.RENOVATE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
         env:
           LOG_LEVEL: info
