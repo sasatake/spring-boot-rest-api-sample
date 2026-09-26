@@ -132,4 +132,5 @@ src/main/resources/
 ## CI
 
 - **CI**（`.github/workflows/ci.yml`）— `main` への push / PR で、PostgreSQL サービスコンテナを立ててテストと静的解析を実行。PR にはカバレッジとテスト結果がコメントされ、解析レポートは artifact として保存される。
+- **依存更新**（`.github/workflows/renovate.yml`）— 毎週月曜 07:00 JST に Renovate を self-hosted（Actions 上で CLI 実行）で走らせ、更新があれば PR を作成する。対象は Gradle の依存・プラグイン・Wrapper、`build.gradle` の `toolVersion`、GitHub Actions、Docker イメージ。更新方針は [renovate.json](renovate.json)、実行時の設定は `.github/renovate-global.js`。
 - **イメージ公開**（`.github/workflows/publish.yml`）— `publish` ブランチへの push で `bootBuildImage` を実行し、`ghcr.io` にコンテナイメージを push する。
