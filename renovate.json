@@ -1,0 +1,55 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitsDisabled"
+  ],
+  "timezone": "Asia/Tokyo",
+  "dependencyDashboard": true,
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "Spring Boot プラグインと BOM 管理プラグインは足並みを揃える必要があるので 1 PR にまとめる",
+      "groupName": "Spring Boot",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": [
+        "org.springframework.boot**",
+        "io.spring.dependency-management**"
+      ]
+    },
+    {
+      "description": "静的解析・カバレッジのツール群（build.gradle の toolVersion 4 件と SpotBugs プラグイン）",
+      "groupName": "静的解析ツール",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": [
+        "com.github.spotbugs**",
+        "com.puppycrawl.tools:checkstyle",
+        "net.sourceforge.pmd:pmd-java",
+        "org.jacoco:org.jacoco.core"
+      ]
+    },
+    {
+      "description": "GitHub Actions と Docker イメージは minor/patch をまとめる",
+      "groupName": "CI / コンテナイメージ",
+      "matchManagers": ["github-actions", "docker-compose", "devcontainer"],
+      "matchUpdateTypes": ["minor", "patch", "digest"]
+    },
+    {
+      "description": "Gradle Wrapper は単独 PR。CI が通れば安全に取り込める",
+      "matchManagers": ["gradle-wrapper"],
+      "groupName": "Gradle Wrapper"
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "build.gradle の toolVersion は Gradle 拡張ブロック内の文字列なので標準パーサでは検出できない。直前行の renovate 注釈から座標を読む",
+      "customType": "regex",
+      "managerFilePatterns": ["/^build\\.gradle$/"],
+      "matchStrings": [
+        "//\\s*renovate:\\s*datasource=(?<datasource>[a-z-]+?)\\s+depName=(?<depName>[^\\s]+?)\\s*\\n\\s*toolVersion\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
+      ]
+    }
+  ]
+}
