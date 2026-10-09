@@ -13,6 +13,7 @@
     {
       "description": "Spring Boot プラグインと BOM 管理プラグインは足並みを揃える必要があるので 1 PR にまとめる",
       "groupName": "Spring Boot",
+      "groupSlug": "spring-boot",
       "matchUpdateTypes": ["minor", "patch"],
       "matchPackageNames": [
         "org.springframework.boot**",
@@ -20,36 +21,29 @@
       ]
     },
     {
-      "description": "静的解析・カバレッジのツール群（build.gradle の toolVersion 4 件と SpotBugs プラグイン）",
+      "description": "静的解析・カバレッジのツール群。build.gradle の toolVersion は gradle manager が標準で解決する",
       "groupName": "静的解析ツール",
+      "groupSlug": "static-analysis",
       "matchUpdateTypes": ["minor", "patch"],
       "matchPackageNames": [
         "com.github.spotbugs**",
         "com.puppycrawl.tools:checkstyle",
         "net.sourceforge.pmd:pmd-java",
-        "org.jacoco:org.jacoco.core"
+        "org.jacoco:jacoco"
       ]
     },
     {
       "description": "GitHub Actions と Docker イメージは minor/patch をまとめる",
       "groupName": "CI / コンテナイメージ",
+      "groupSlug": "ci-images",
       "matchManagers": ["github-actions", "docker-compose", "devcontainer"],
       "matchUpdateTypes": ["minor", "patch", "digest"]
     },
     {
       "description": "Gradle Wrapper は単独 PR。CI が通れば安全に取り込める",
-      "matchManagers": ["gradle-wrapper"],
-      "groupName": "Gradle Wrapper"
-    }
-  ],
-  "customManagers": [
-    {
-      "description": "build.gradle の toolVersion は Gradle 拡張ブロック内の文字列なので標準パーサでは検出できない。直前行の renovate 注釈から座標を読む",
-      "customType": "regex",
-      "managerFilePatterns": ["/^build\\.gradle$/"],
-      "matchStrings": [
-        "//\\s*renovate:\\s*datasource=(?<datasource>[a-z-]+?)\\s+depName=(?<depName>[^\\s]+?)\\s*\\n\\s*toolVersion\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
-      ]
+      "groupName": "Gradle Wrapper",
+      "groupSlug": "gradle-wrapper",
+      "matchManagers": ["gradle-wrapper"]
     }
   ]
 }

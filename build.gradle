@@ -40,7 +40,6 @@ tasks.named('test') {
 }
 
 jacoco {
-	// renovate: datasource=maven depName=org.jacoco:org.jacoco.core
 	toolVersion = '0.8.15'
 }
 
@@ -53,7 +52,6 @@ tasks.named('jacocoTestReport') {
 }
 
 checkstyle {
-	// renovate: datasource=maven depName=com.puppycrawl.tools:checkstyle
 	toolVersion = '13.8.0'
 	configFile = file('config/checkstyle/checkstyle.xml')
 	// 警告のみ運用: 違反があってもビルドは失敗させない
@@ -61,7 +59,6 @@ checkstyle {
 }
 
 pmd {
-	// renovate: datasource=maven depName=net.sourceforge.pmd:pmd-java
 	toolVersion = '7.26.0'
 	ruleSetFiles = files('config/pmd/ruleset.xml')
 	ruleSets = []
@@ -70,7 +67,6 @@ pmd {
 }
 
 spotbugs {
-	// renovate: datasource=maven depName=com.github.spotbugs:spotbugs
 	toolVersion = '4.10.3'
 	excludeFilter = file('config/spotbugs/exclude.xml')
 	// 警告のみ運用: 違反があってもビルドは失敗させない
