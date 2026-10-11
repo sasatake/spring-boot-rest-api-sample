@@ -6,7 +6,9 @@
   ],
   "timezone": "Asia/Tokyo",
   "dependencyDashboard": true,
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
@@ -14,7 +16,10 @@
       "description": "Spring Boot プラグインと BOM 管理プラグインは足並みを揃える必要があるので 1 PR にまとめる",
       "groupName": "Spring Boot",
       "groupSlug": "spring-boot",
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "matchPackageNames": [
         "org.springframework.boot**",
         "io.spring.dependency-management**"
@@ -24,7 +29,10 @@
       "description": "静的解析・カバレッジのツール群。build.gradle の toolVersion は gradle manager が標準で解決する",
       "groupName": "静的解析ツール",
       "groupSlug": "static-analysis",
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "matchPackageNames": [
         "com.github.spotbugs**",
         "com.puppycrawl.tools:checkstyle",
@@ -36,14 +44,87 @@
       "description": "GitHub Actions と Docker イメージは minor/patch をまとめる",
       "groupName": "CI / コンテナイメージ",
       "groupSlug": "ci-images",
-      "matchManagers": ["github-actions", "docker-compose", "devcontainer"],
-      "matchUpdateTypes": ["minor", "patch", "digest"]
+      "matchManagers": [
+        "github-actions",
+        "docker-compose",
+        "devcontainer"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ]
     },
     {
       "description": "Gradle Wrapper は単独 PR。CI が通れば安全に取り込める",
       "groupName": "Gradle Wrapper",
       "groupSlug": "gradle-wrapper",
-      "matchManagers": ["gradle-wrapper"]
+      "matchManagers": [
+        "gradle-wrapper"
+      ]
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（Spring Boot プラグイン）",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^docs/architecture\\.md$/"
+      ],
+      "matchStrings": [
+        "\\| フレームワーク \\| Spring Boot (?<currentValue>[0-9][0-9.]*) \\|"
+      ],
+      "depNameTemplate": "org.springframework.boot",
+      "packageNameTemplate": "org.springframework.boot:org.springframework.boot.gradle.plugin",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（Gradle Wrapper）",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^docs/architecture\\.md$/"
+      ],
+      "matchStrings": [
+        "\\| ビルドツール \\| Gradle (?<currentValue>[0-9][0-9.]*) \\|"
+      ],
+      "depNameTemplate": "gradle",
+      "datasourceTemplate": "gradle-version"
+    },
+    {
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（MyBatis）",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^docs/architecture\\.md$/"
+      ],
+      "matchStrings": [
+        "\\| ORM \\| MyBatis (?<currentValue>[0-9][0-9.]*) \\|"
+      ],
+      "depNameTemplate": "org.mybatis.spring.boot:mybatis-spring-boot-starter",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（springdoc-openapi）",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^docs/architecture\\.md$/"
+      ],
+      "matchStrings": [
+        "\\| API 仕様 \\| springdoc-openapi (?<currentValue>[0-9][0-9.]*)"
+      ],
+      "depNameTemplate": "org.springdoc:springdoc-openapi-starter-webmvc-ui",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（PostgreSQL。DB 構成表の 2 行とも対象）",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^docs/architecture\\.md$/"
+      ],
+      "matchStrings": [
+        "PostgreSQL (?<currentValue>[0-9]+)"
+      ],
+      "depNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
     }
   ]
 }
