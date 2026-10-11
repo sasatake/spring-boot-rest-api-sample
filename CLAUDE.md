@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-図書館管理の REST API サンプル。Java 25 / Spring Boot 4 / MyBatis / Flyway / PostgreSQL 17。
+図書館管理の REST API サンプル。Spring Boot / MyBatis / Flyway / PostgreSQL。
 
 ## 最初に読むもの
 
@@ -23,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **仕様が実装より先。** `docs/specs/` と `docs/openapi.yaml` が正で、仕様にない挙動が必要になったら実装より先に仕様書を更新する。ステップ完了時に `docs/roadmap.md` の状態を更新する
 - 適用済みの Flyway マイグレーションは書き換えない。常に新しい `V{連番}__{内容}.sql` を足す
 - 静的解析は警告のみ運用で CI も落とさないが、新規・変更コードで警告を増やさない
+- **ドキュメントにバージョン番号を書いてよいのは [docs/architecture.md](docs/architecture.md) の技術スタック表だけ。** 他の箇所は技術名のみにする。依存を上げたらその表を更新する
 
 ## コマンドの補足
 
@@ -37,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew test --tests '*BookControllerIntegrationTest.createBookWithDuplicateIsbnReturnsConflict'
 ```
 
-**`./gradlew` が Java ランタイム不在で落ちる場合**、そのホストに JDK 25 が入っていない。このリポジトリの正式な開発環境は Dev Container なので、ホストからはコンテナ越しに実行する。
+**`./gradlew` が Java ランタイム不在で落ちる場合**、そのホストに JDK が入っていない。このリポジトリの正式な開発環境は Dev Container なので、ホストからはコンテナ越しに実行する。
 
 ```sh
 docker compose -f docker-compose.yml -f .devcontainer/compose.yml exec -u vscode app ./gradlew test

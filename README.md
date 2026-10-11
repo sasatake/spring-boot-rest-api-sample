@@ -6,13 +6,13 @@ Spring Boot による図書館管理 REST API のサンプル実装。書籍・�
 
 ## 技術スタック
 
-Java 25 / Spring Boot 4.0.6 / MyBatis 4.0.1 / Flyway / PostgreSQL 17。ビルドは Gradle 9.5.1（Wrapper 同梱）、API 仕様は springdoc-openapi で自動生成。
+Spring Boot / MyBatis / Flyway / PostgreSQL。ビルドは Gradle（Wrapper 同梱）、API 仕様は springdoc-openapi で自動生成。
 
 バージョンを含む一覧と技術選定は [docs/architecture.md](docs/architecture.md)。
 
 ## クイックスタート
 
-必要なもの: Docker（Compose）、JDK 25。
+必要なもの: Docker（Compose）と JDK（必要なバージョンは [docs/architecture.md](docs/architecture.md) を参照）。
 
 ```bash
 # PostgreSQL 起動（library / library_test の両 DB が作られる）
