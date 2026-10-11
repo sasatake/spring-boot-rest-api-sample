@@ -56,11 +56,11 @@
       ]
     },
     {
-      "description": "Gradle Wrapper は単独 PR。CI が通れば安全に取り込める",
+      "description": "Gradle Wrapper は単独 PR。CI が通れば安全に取り込める。matchManagers ではなく depName で照合するのは、docs/architecture.md の 表を拾う customManager 側の gradle も同じグループに入れるため（manager で絞るとブランチが 2 本に割れる）",
       "groupName": "Gradle Wrapper",
       "groupSlug": "gradle-wrapper",
-      "matchManagers": [
-        "gradle-wrapper"
+      "matchDepNames": [
+        "gradle"
       ]
     }
   ],
