@@ -66,7 +66,7 @@
   ],
   "customManagers": [
     {
-      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（Spring Boot プラグイン）。取得元は build.gradle 側の検出と同じ gradle-plugin（Gradle Plugin Portal）に揃える。maven（Maven Central）指定では no-result で検出に失敗していた",
+      "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（Spring Boot プラグイン）。取得元は build.gradle 側の gradle manager と同じ Gradle Plugin Portal に揃える（gradle manager もプラグインは maven datasource + Plugin Portal の registryUrl で引いている。gradle-plugin という datasource は存在しない）。既定の Maven Central では no-result で検出に失敗していた",
       "customType": "regex",
       "managerFilePatterns": [
         "/^docs/architecture\\.md$/"
@@ -76,7 +76,8 @@
       ],
       "depNameTemplate": "org.springframework.boot",
       "packageNameTemplate": "org.springframework.boot:org.springframework.boot.gradle.plugin",
-      "datasourceTemplate": "gradle-plugin"
+      "datasourceTemplate": "maven",
+      "registryUrlTemplate": "https://plugins.gradle.org/m2/"
     },
     {
       "description": "docs/architecture.md の技術スタック表を実体に追従させる。depName を build.gradle 等の検出結果と一致させてあるため、同じ更新は 1 ブランチで両方のファイルが書き換わる（Gradle Wrapper）",
