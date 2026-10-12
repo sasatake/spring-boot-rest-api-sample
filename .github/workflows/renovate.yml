@@ -38,6 +38,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # dryRun にチェックを入れても通常実行になることがあったため、
+      # 実際に渡った入力値をログに残して切り分けられるようにする。
+      # inputs は boolean 型、github.event.inputs は文字列型で値が入る
+      - name: Show inputs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUTS: ${{ toJSON(inputs) }}
+          EVENT_INPUTS: ${{ toJSON(github.event.inputs) }}
+        run: |
+          echo "event_name: $EVENT_NAME"
+          echo "inputs: $INPUTS"
+          echo "github.event.inputs: $EVENT_INPUTS"
+
       # dry run と通常実行でステップを分けている。
       # RENOVATE_DRY_RUN は 'extract' / 'lookup' / 'full' を取り、
       # 空文字を渡した場合の扱いが保証されていないため、環境変数自体を出し分ける。
