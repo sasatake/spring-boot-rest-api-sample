@@ -12,7 +12,7 @@ Spring Boot を用いた図書館管理システムの REST API。
 | 言語 | Java 25 |
 | フレームワーク | Spring Boot 4.0.6 |
 | ビルドツール | Gradle 9.5.1 |
-| ORM | MyBatis 4.0.1 |
+| ORM | MyBatis 4.1.0 |
 | DB マイグレーション | Flyway |
 | API 仕様 | springdoc-openapi 3.1.1(Swagger UI 自動生成) |
 | テスト | JUnit 5 / @WebMvcTest / @SpringBootTest(PostgreSQL 結合テスト) |
