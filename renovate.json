@@ -64,8 +64,9 @@
       ]
     },
     {
-      "description": "patch 更新は CI が通れば自動マージする。グループ PR は含まれる更新がすべて patch のときだけ対象になる（Renovate はブランチ内の全更新が automerge のときだけ自動マージする）。CI が未完了・失敗のあいだはマージしない",
+      "description": "minor / patch 更新は CI が通れば自動マージする。major は手動でレビューする。グループ PR は含まれる更新に major が無いときだけ対象になる（Renovate はブランチ内の全更新が automerge のときだけ自動マージする）。CI が未完了・失敗のあいだはマージしない",
       "matchUpdateTypes": [
+        "minor",
         "patch"
       ],
       "automerge": true
