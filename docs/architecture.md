@@ -10,7 +10,7 @@ Spring Boot を用いた図書館管理システムの REST API。
 | 項目 | 内容 |
 |---|---|
 | 言語 | Java 25 |
-| フレームワーク | Spring Boot 4.0.6 |
+| フレームワーク | Spring Boot 4.1.1 |
 | ビルドツール | Gradle 9.5.1 |
 | ORM | MyBatis 4.1.0 |
 | DB マイグレーション | Flyway |
