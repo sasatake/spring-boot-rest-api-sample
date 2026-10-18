@@ -62,6 +62,13 @@
       "matchDepNames": [
         "gradle"
       ]
+    },
+    {
+      "description": "patch 更新は CI が通れば自動マージする。グループ PR は含まれる更新がすべて patch のときだけ対象になる（Renovate はブランチ内の全更新が automerge のときだけ自動マージする）。CI が未完了・失敗のあいだはマージしない",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true
     }
   ],
   "customManagers": [
