@@ -5,7 +5,7 @@ plugins {
 	id 'jacoco'
 	id 'checkstyle'
 	id 'pmd'
-	id 'com.github.spotbugs' version '6.5.12'
+	id 'com.github.spotbugs' version '6.5.13'
 }
 
 group = 'org.sample'
@@ -67,7 +67,7 @@ pmd {
 }
 
 spotbugs {
-	toolVersion = '4.10.4'
+	toolVersion = '4.10.5'
 	excludeFilter = file('config/spotbugs/exclude.xml')
 	// 警告のみ運用: 違反があってもビルドは失敗させない
 	ignoreFailures = true
