@@ -30,7 +30,7 @@ jobs:
       # 特別扱いされない)ので、Renovate PR もテストで検証される。
       - name: Generate installation token
         id: app-token
-        uses: actions/create-github-app-token@v3.2.0
+        uses: actions/create-github-app-token@v3.3.0
         with:
           client-id: ${{ secrets.RENOVATE_APP_CLIENT_ID }}
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
@@ -56,7 +56,7 @@ jobs:
       # 空文字を渡した場合の扱いが保証されていないため、環境変数自体を出し分ける。
       - name: Run Renovate (dry run)
         if: inputs.dryRun
-        uses: renovatebot/github-action@v46.3.7
+        uses: renovatebot/github-action@v46.3.9
         with:
           configurationFile: .github/renovate-global.js
           token: ${{ steps.app-token.outputs.token }}
@@ -66,7 +66,7 @@ jobs:
 
       - name: Run Renovate
         if: ${{ !inputs.dryRun }}
-        uses: renovatebot/github-action@v46.3.7
+        uses: renovatebot/github-action@v46.3.9
         with:
           configurationFile: .github/renovate-global.js
           token: ${{ steps.app-token.outputs.token }}
